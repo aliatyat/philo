@@ -19,6 +19,8 @@ typedef struct s_data
     int         dead;              // 1 if a philosopher has died
     pthread_mutex_t dead_lock;     // Protects the 'dead' variable
     pthread_mutex_t *forks;        // Array of mutexes for forks
+    int stop_simulation;
+    pthread_mutex_t stop_mutex;
 } t_data;
 
 
@@ -35,7 +37,7 @@ typedef struct s_philosopher
 
 
 
-
+int main(int argc, char **argv);
 
 
 
