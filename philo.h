@@ -1,52 +1,47 @@
 #ifndef PHILO_H
-# define PHILO_H
+#define PHILO_H
 
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <sys/time.h>
+#include <unistd.h>
 
-
-typedef struct s_data
-{
-    int         num_philos;        // Number of philosophers
-    int         time_to_die;       // Time before a philosopher dies (ms)
-    int         time_to_eat;       // Time spent eating (ms)
-    int         time_to_sleep;     // Time spent sleeping (ms)
-    int         must_eat_count;    // Optional: Number of times each philosopher must eat
-    int         eat_count;
-    long long   start_time;        // Simulation start time
-    int         dead;              // 1 if a philosopher has died
-    pthread_mutex_t dead_lock;     // Protects the 'dead' variable
-    pthread_mutex_t *forks;        // Array of mutexes for forks
-    int stop_simulation;
-    pthread_mutex_t stop_mutex;
-} t_data;
-
-
+// Define the philosopher structure
 typedef struct s_philosopher
 {
-    int             id;         // Philosopher ID (1 to num_philos)
-    int             meals_eaten;// Count of meals eaten
-    long long       last_meal;  // Timestamp of last meal
-    pthread_t       thread;     // Thread for the philosopher
-    pthread_mutex_t *left_fork; // Pointer to left fork mutex
-    pthread_mutex_t *right_fork;// Pointer to right fork mutex
-    t_data          *data;      // Pointer to shared data
+    int id;
+    int meals_eaten;
+    long long last_meal;
+    pthread_mutex_t *left_fork;
+    pthread_mutex_t *right_fork;
+    struct s_data *data;
+    pthread_t thread;
 } t_philosopher;
 
+// Define the data structure for shared information
+typedef struct s_data
+{
+    int num_philos;
+    int time_to_die;
+    int time_to_eat;
+    int time_to_sleep;
+    int must_eat_count;
+    int dead;
+    long long start_time;
+    pthread_mutex_t *forks;
+    pthread_mutex_t dead_lock;
+    pthread_mutex_t print_lock;
+} t_data;
 
-void cleanup(t_data *data, t_philosopher *philos);
-int main(int argc, char **argv);
+// Function prototypes
+long long get_time(void);
+void print_status(t_philosopher *philo, char *status);
+void take_forks(t_philosopher *philo);
+void put_forks(t_philosopher *philo);
+void *philosopher_routine(void *arg);
+int monitor_philos(t_data *data, t_philosopher *philos);
+int start_simulation(t_data *data, t_philosopher *philos);
+int init_philosophers(t_data *data, t_philosopher *philos);
 
-
-
-
-
-
-
-
-
-
-#endif
+#endif // PHILO_H
