@@ -15,6 +15,7 @@ typedef struct s_data
     int         time_to_eat;       // Time spent eating (ms)
     int         time_to_sleep;     // Time spent sleeping (ms)
     int         must_eat_count;    // Optional: Number of times each philosopher must eat
+    int         eat_count;
     long long   start_time;        // Simulation start time
     int         dead;              // 1 if a philosopher has died
     pthread_mutex_t dead_lock;     // Protects the 'dead' variable
@@ -36,7 +37,7 @@ typedef struct s_philosopher
 } t_philosopher;
 
 
-
+void cleanup(t_data *data, t_philosopher *philos);
 int main(int argc, char **argv);
 
 

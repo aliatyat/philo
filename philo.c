@@ -48,7 +48,7 @@ void *philosopher_routine(void *arg)
     return NULL;
 }
 
-void monitor_philosophers(t_data *data, t_philosopher *philos)
+int monitor_philosophers(t_data *data, t_philosopher *philos)
 {
     int i;
 
@@ -58,12 +58,20 @@ void monitor_philosophers(t_data *data, t_philosopher *philos)
         while (i < data->num_philos)
         {
             pthread_mutex_lock(&data->dead_lock);
-            if (get_time() - philos[i].last_meal > data->time_to_die)
+            if (get_time() - (philos[i].last_meal) > (data->time_to_die))
             {
                 printf("Philosopher %d has died *_* \n", philos[i].id);
                 data->dead = 1;
                 pthread_mutex_unlock(&data->dead_lock);
-                exit (1);
+                //cleanup(data, philos);
+                return (0);
+            }
+
+             if (data->must_eat_count != -1 && data->must_eat_count == philos->meals_eaten)
+            {
+                //data->must_eat_count++;
+                pthread_mutex_unlock(&data->dead_lock);
+                return (0);
             }
             pthread_mutex_unlock(&data->dead_lock);
             i++;
@@ -82,18 +90,20 @@ void start_simulation(t_data *data, t_philosopher *philos)
         if (pthread_create(&philos[i].thread, NULL, philosopher_routine, &philos[i]) != 0)
         {
             printf("Error: Failed to create thread for philosopher %d\n", i + 1);
+            //cleanup(data, philos);
             return;
         }
         i++;
     }
     monitor_philosophers(data, philos);
+    //cleanup(data, philos);
 }
 
 void cleanup(t_data *data, t_philosopher *philos)
 {
     int i = 0;
 
-    while (i < data->num_philos)
+    while (i <= data->num_philos)
     {
         pthread_join(philos[i].thread, NULL);
         i++;
@@ -123,7 +133,11 @@ int main(int argc, char **argv)
     data.time_to_sleep = atoi(argv[4]);
     
     if (argc == 6)
-        data.must_eat_count = atoi(argv[5]);
+        //data.eat_count = -2;
+       data.must_eat_count = atoi(argv[5]);
+        //if (data.eat_count == atoi(argv[5]))
+          //  exit(1);
+
     else
         data.must_eat_count = -1;
 
@@ -167,3 +181,4 @@ int main(int argc, char **argv)
     cleanup(&data, philos);
     return 0;
 }
+
