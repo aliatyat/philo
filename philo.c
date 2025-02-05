@@ -7,7 +7,7 @@ void	*philosopher_routine(void *arg)
 	philo = (t_philosopher *)arg;
 	while (1)
 	{
-		check_death_and_meals(philo);
+		
 		handle_single_philosopher(philo);
 		print_status(philo, "is thinking");
 		take_forks(philo);
@@ -20,6 +20,7 @@ void	*philosopher_routine(void *arg)
 		put_forks(philo);
 		print_status(philo, "is sleeping");
 		usleep(philo->data->time_to_sleep * 1000);
+		check_death_and_meals(philo);
 	}
 	return (NULL);
 }
@@ -63,9 +64,9 @@ int	start_simulation(t_data *data, t_philosopher *philos)
 			pthread_mutex_unlock(&data->dead_lock);
 			return (0);
 		}
-		if (pthread_create(&philos[i].thread, NULL, philosopher_routine,
-				&philos[i]))
-			return (0);
+		pthread_create(&philos[i].thread, NULL, philosopher_routine,
+				&philos[i]);
+			
 		pthread_mutex_lock(&philos->data->dead_lock);
 		philos[i].last_meal = get_time();
 		pthread_mutex_unlock(&philos->data->dead_lock);

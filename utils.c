@@ -42,16 +42,31 @@ void	put_forks(t_philosopher *philo)
 	pthread_mutex_unlock(philo->left_fork);
 }
 
-void	check_death_and_meals(t_philosopher *philo)
-{
-	pthread_mutex_lock(&philo->data->dead_lock);
-	if (philo->data->dead || (philo->data->must_eat_count != -1
-			&& philo->meals_eaten >= philo->data->must_eat_count))
+int check_death_and_meals(t_philosopher *philo)
+ {
+    pthread_mutex_lock(&philo->data->dead_lock);
+    if (philo->data->dead || (philo->data->must_eat_count != -1 
+	&& philo->meals_eaten > philo->data->must_eat_count))
+	 {
+        if (philo->data->must_eat_count != -1 
+		&& philo->meals_eaten > philo->data->must_eat_count) 
+		{
+            pthread_mutex_lock(&philo->data->meal_lock);
+            philo->data->finished_eating++;
+            if (philo->data->finished_eating == philo->data->num_philos)
+                philo->data->dead = 1;
+            pthread_mutex_unlock(&philo->data->meal_lock);
+        }
+        pthread_mutex_unlock(&philo->data->dead_lock);
+        exit (1);
+    }
+    if ((get_time() - philo->last_meal) > philo->data->time_to_die) 
 	{
-		pthread_mutex_unlock(&philo->data->dead_lock);
-		pthread_exit(NULL);
-	}
-	pthread_mutex_unlock(&philo->data->dead_lock);
+        print_status(philo, "has died");
+        philo->data->dead = 1;
+    }
+    pthread_mutex_unlock(&philo->data->dead_lock);
+	return 0;
 }
 
 void	handle_single_philosopher(t_philosopher *philo)
