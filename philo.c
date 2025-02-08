@@ -1,40 +1,28 @@
 #include "philo.h"
 
-void *philosopher_routine(void *arg)
+void	*philosopher_routine(void *arg)
 {
-    t_philosopher *philo = (t_philosopher *)arg;
-    while (1)
-    {
-        pthread_mutex_lock(&philo->data->dead_lock);
-        if (philo->data->dead)
-        {
-            pthread_mutex_unlock(&philo->data->dead_lock);
-            break;
-        }
-        pthread_mutex_unlock(&philo->data->dead_lock);
+	t_philosopher	*philo;
 
-        if (handle_single_philosopher(philo))
-            break;
-
-        print_status(philo, "is thinking");
-        take_forks(philo);
-        print_status(philo, "is eating");
-
-        pthread_mutex_lock(&philo->data->dead_lock);
-        philo->last_meal = get_time();
-        philo->meals_eaten++;
-        pthread_mutex_unlock(&philo->data->dead_lock);
-
-        usleep(philo->data->time_to_eat * 1000);
-        put_forks(philo);
-
-        print_status(philo, "is sleeping");
-        usleep(philo->data->time_to_sleep * 1000);
-
-        if (check_death_and_meals(philo))
-            break;
-    }
-    return NULL;
+	philo = (t_philosopher *)arg;
+	while (1)
+	{
+		
+		handle_single_philosopher(philo);
+		print_status(philo, "is thinking");
+		take_forks(philo);
+		print_status(philo, "is eating");
+		pthread_mutex_lock(&philo->data->dead_lock);
+		philo->last_meal = get_time();
+		philo->meals_eaten++;
+		pthread_mutex_unlock(&philo->data->dead_lock);
+		usleep(philo->data->time_to_eat * 1000);
+		put_forks(philo);
+		print_status(philo, "is sleeping");
+		usleep(philo->data->time_to_sleep * 1000);
+		check_death_and_meals(philo);
+	}
+	return (NULL);
 }
 
 // int monitor_philos(t_data *data, t_philosopher *philos)
@@ -69,17 +57,15 @@ int	start_simulation(t_data *data, t_philosopher *philos)
 	i = 0;
 	while (i < data->num_philos)
 	{
-		
-		if(pthread_create(&philos[i].thread, NULL, philosopher_routine,
-				&philos[i]))
-                return 1;
-        // if ((get_time() - philos[i].last_meal) > data->time_to_die)
-		// {
-		// 	print_status(&philos[i], "has died_sim");
-		// 	data->dead = 1;
-		// 	pthread_mutex_unlock(&data->dead_lock);
-		// 	return (0);
-		// }
+		if ((get_time() - philos[i].last_meal) > data->time_to_die)
+		{
+			print_status(&philos[i], "has died");
+			data->dead = 1;
+			pthread_mutex_unlock(&data->dead_lock);
+			return (0);
+		}
+		pthread_create(&philos[i].thread, NULL, philosopher_routine,
+				&philos[i]);
 			
 		pthread_mutex_lock(&philos->data->dead_lock);
 		philos[i].last_meal = get_time();

@@ -49,7 +49,7 @@ void				print_status(t_philosopher *philo, char *status);
 void				take_forks(t_philosopher *philo);
 void				put_forks(t_philosopher *philo);
 int				check_death_and_meals(t_philosopher *philo);
-int				handle_single_philosopher(t_philosopher *philo);
+void				handle_single_philosopher(t_philosopher *philo);
 void				init_data(t_data *data, int argc, char **argv);
 void				init_forks(t_data *data);
 void				cleanup(t_data *data, t_philosopher *philos);
