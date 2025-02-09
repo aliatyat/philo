@@ -54,7 +54,7 @@ int check_death_and_meals(t_philosopher *philo)
         pthread_mutex_unlock(&philo->data->dead_lock);
         return 1;
     }
-    if (philo->data->must_eat_count != -1 && philo->meals_eaten >= philo->data->must_eat_count)
+    if (philo->data->must_eat_count != -1 && philo->meals_eaten > philo->data->must_eat_count)
     {
         pthread_mutex_lock(&philo->data->meal_lock);
         philo->data->finished_eating++;

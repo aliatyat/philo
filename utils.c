@@ -69,15 +69,16 @@ int check_death_and_meals(t_philosopher *philo)
 	return 0;
 }
 
-void	handle_single_philosopher(t_philosopher *philo)
+int	handle_single_philosopher(t_philosopher *philo)
 {
 	if (philo->data->num_philos == 1)
 	{
 		print_status(philo, "took right fork");
 		usleep(philo->data->time_to_die * 1000);
 		print_status(philo, "is died");
-		pthread_exit(NULL);
+		return(1);
 	}
+	return 0;
 }
 
 void	init_data(t_data *data, int argc, char **argv)

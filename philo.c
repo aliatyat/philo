@@ -8,7 +8,8 @@ void	*philosopher_routine(void *arg)
 	while (1)
 	{
 		
-		handle_single_philosopher(philo);
+		if(handle_single_philosopher(philo))
+			return(0);
 		print_status(philo, "is thinking");
 		take_forks(philo);
 		print_status(philo, "is eating");
@@ -20,7 +21,8 @@ void	*philosopher_routine(void *arg)
 		put_forks(philo);
 		print_status(philo, "is sleeping");
 		usleep(philo->data->time_to_sleep * 1000);
-		check_death_and_meals(philo);
+		if(check_death_and_meals(philo))
+			return (0);
 	}
 	return (NULL);
 }
