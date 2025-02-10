@@ -30,6 +30,7 @@ typedef struct s_data
     long long       start_time;
     pthread_mutex_t dead_lock;
     pthread_mutex_t meal_lock;
+    pthread_mutex_t meal2_lock;
     pthread_mutex_t *forks;
     pthread_mutex_t print_lock;
     t_philosopher   philosophers[250];
@@ -47,6 +48,10 @@ int         validate_args(int argc, char **argv);
 int         init_all(t_data *data, char **argv);
 void        init_forks(t_data *data);
 void        cleanup(t_data *data);
+int	handle_single_philosopher(t_philosopher *philo);
 int         check_death_and_meals(t_philosopher *philo);
+void	precise_sleep(long long start_time, long long duration_ms,
+						t_philosopher *philo);
+long long	time_of_philo(void);
 
 #endif
