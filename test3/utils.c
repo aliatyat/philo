@@ -1,30 +1,5 @@
 #include "philo.h"
 
-// long long	time_diff(long long past, long long pres)
-// {
-// 	return (pres - past);
-// }
-
-// void	smart_sleep(long long time, t_data *data)
-// {
-// 	long long	start_time;
-
-// 	start_time = get_time();
-// 	while (1)
-// 	{
-// 		pthread_mutex_lock(&(data->dead_lock));
-// 		if (data->dead)
-// 		{
-// 			pthread_mutex_unlock(&(data->dead_lock));
-// 			break ;
-// 		}
-// 		pthread_mutex_unlock(&(data->dead_lock));
-// 		if (time_diff(start_time, get_time()) >= time)
-// 			break ;
-// 		usleep(100);
-// 	}
-// }
-
 // Convert to milliseconds
 long long	get_time(void)
 {

@@ -55,10 +55,10 @@ void				handle_single_philosopher(t_philosopher *philo);
 void	init_data(t_data *data, t_philosopher *philos, int argc, char **argv);
 void				init_forks(t_data *data);
 void				cleanup(t_data *data, t_philosopher *philos);
-int monitor_philos(t_data *data, t_philosopher *philos);
-void	smart_sleep(long long time, t_data *data);
+//int monitor_philos(t_data *data, t_philosopher *philos);
+//void	smart_sleep(long long time, t_data *data);
 void	precise_sleep(long long start_time, long long duration_ms,
 						t_philosopher *philo);
 						long long	time_of_philo(void);
 
-#endif // PHILO_H
+#endif // PHILO

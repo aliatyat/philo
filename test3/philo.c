@@ -31,9 +31,13 @@ void	*philosopher_routine(void *arg)
 				//usleep(philo->data->time_to_sleep * 1000);
 				print_status(philo, "All philosophers have eaten enough times");
 				philo->data->dead = 1;
+				pthread_mutex_unlock(&philo->data->dead_lock);
+				//return NULL;
+				exit (1);
 			}
 			pthread_mutex_unlock(&philo->data->dead_lock);
-			exit (1);
+			//exit (1);
+			//return NULL;
 		}
 		//usleep(philo->data->time_to_sleep * 1000);
 		print_status(philo, "is sleeping");
@@ -48,19 +52,19 @@ void	*philosopher_routine(void *arg)
 		//pthread_mutex_lock(&philo->meal_mutex);
 		if (philo->data->dead || (get_time() - philo->last_meal) > philo->data->time_to_die)
 		{
-			//if (!philo->data->dead)
-			//{
+			if (!philo->data->dead)
+			{
 				//usleep(philo->data->time_to_sleep * 1000);
 				print_status(philo, "has died");
 				philo->data->dead = 1;
-			//}
+			}
 			//pthread_mutex_unlock(&philo->meal_mutex);
 			pthread_mutex_unlock(&philo->data->dead_lock);
 			break;
 		}
 		pthread_mutex_unlock(&philo->data->dead_lock);
 	}
-	return (NULL);
+	return (int *)0;
 }
 
 // int monitor_philos(t_data *data, t_philosopher *philos)
@@ -119,15 +123,16 @@ int start_simulation(t_data *data, t_philosopher *philos)
 			return 0;
 	
 		
-		//pthread_mutex_lock(&data->dead_lock);
+		pthread_mutex_lock(&philos[i].meal_mutex);
 		philos[i].last_meal = get_time();
-		//pthread_mutex_unlock(&data->dead_lock);
+		pthread_mutex_unlock(&philos[i].meal_mutex);
 
 		i++;
 	}
   while (1)
     {
         i = 0;
+		//pthread_mutex_lock(&data->dead_lock);
         while (i < data->num_philos)
         {
             pthread_mutex_lock(&data->dead_lock);
@@ -136,16 +141,17 @@ int start_simulation(t_data *data, t_philosopher *philos)
                 pthread_mutex_unlock(&data->dead_lock);
                 return 0;
             }
-			//pthread_mutex_lock(&philos[i].meal_mutex);
+			pthread_mutex_lock(&philos[i].meal_mutex);
             if ((get_time() - philos[i].last_meal) > data->time_to_die)
             {
                 print_status(&philos[i], "has died");
                 data->dead = 1;
                 pthread_mutex_unlock(&data->dead_lock);
+				pthread_mutex_unlock(&philos[i].meal_mutex);
                 return 0;
             }
-			//pthread_mutex_unlock(&philos[i].meal_mutex);
             pthread_mutex_unlock(&data->dead_lock);
+			pthread_mutex_unlock(&philos[i].meal_mutex);
             i++;
         }
         usleep(100);
@@ -200,6 +206,7 @@ int	main(int argc, char **argv)
 	if (start_simulation(&data, philos))
 	{
 		printf("Simulation completed\n");
+		//return (1);
 	}
 	cleanup(&data, philos);
 	return (0);
