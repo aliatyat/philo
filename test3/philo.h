@@ -12,6 +12,7 @@ typedef struct s_philosopher
 {
 	int				id;
 	int				meals_eaten;
+	
 	long long		last_meal;
 	
 	pthread_mutex_t	*left_fork;

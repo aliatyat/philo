@@ -105,6 +105,7 @@ void	precise_sleep(long long start_time, long long duration_ms,
 	{
 		// pthread_mutex_lock(&philo->simulation->data_lock);
         pthread_mutex_lock(&philo->data->dead_lock);
+		
 		if (philo->data->dead == 1)
 		{
 			// pthread_mutex_unlock(&philo->simulation->data_lock);
@@ -134,6 +135,7 @@ void	init_data(t_data *data, t_philosopher *philos, int argc, char **argv)
 	while (i < data->num_philos)
 	{
 	    pthread_mutex_init(&philos[i].meal_mutex, NULL);
+		pthread_mutex_init(&philos[i].all_done, NULL);
 	    i++;
 	}
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->num_philos);

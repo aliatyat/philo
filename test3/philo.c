@@ -22,22 +22,25 @@ void	*philosopher_routine(void *arg)
 		precise_sleep(time_of_philo(), philo->data->time_to_eat, philo);
 		//usleep(philo->data->time_to_eat * 1000);
 		put_forks(philo);
-		if (philo->data->must_eat_count != -1 && philo->meals_eaten > philo->data->must_eat_count)
+		if (philo->data->must_eat_count != -1 && philo->meals_eaten == philo->data->must_eat_count)
 		{
 			pthread_mutex_lock(&philo->data->dead_lock);
 			philo->data->num_philos--;
+			//pthread_mutex_unlock(&philo->data->dead_lock);
+				
 			if (philo->data->num_philos == 0)
 			{
 				//usleep(philo->data->time_to_sleep * 1000);
+				//pthread_mutex_lock(&philo->data->dead_lock);
 				print_status(philo, "All philosophers have eaten enough times");
 				philo->data->dead = 1;
 				pthread_mutex_unlock(&philo->data->dead_lock);
-				//return NULL;
-				exit (1);
+				return NULL;
+				//exit (1);
 			}
 			pthread_mutex_unlock(&philo->data->dead_lock);
 			//exit (1);
-			//return NULL;
+			// return NULL;
 		}
 		//usleep(philo->data->time_to_sleep * 1000);
 		print_status(philo, "is sleeping");
@@ -64,7 +67,8 @@ void	*philosopher_routine(void *arg)
 		}
 		pthread_mutex_unlock(&philo->data->dead_lock);
 	}
-	return (int *)0;
+	return NULL;
+	//return (int *)0;
 }
 
 // int monitor_philos(t_data *data, t_philosopher *philos)
@@ -132,7 +136,7 @@ int start_simulation(t_data *data, t_philosopher *philos)
   while (1)
     {
         i = 0;
-		//pthread_mutex_lock(&data->dead_lock);
+		//pthread_mutex_lock(&philos->d);
         while (i < data->num_philos)
         {
             pthread_mutex_lock(&data->dead_lock);
@@ -154,7 +158,10 @@ int start_simulation(t_data *data, t_philosopher *philos)
 			pthread_mutex_unlock(&philos[i].meal_mutex);
             i++;
         }
+		if (data->num_philos == 0)
+			break ;
         usleep(100);
+		
     }
 	
 	return (1);
@@ -203,11 +210,11 @@ int	main(int argc, char **argv)
 	init_data(&data, philos, argc, argv);
 	init_forks(&data);
 	init_philosophers(&data, philos);
-	if (start_simulation(&data, philos))
-	{
-		printf("Simulation completed\n");
-		//return (1);
-	}
+	if( start_simulation(&data, philos))
+	// {
+	// 	printf("Simulation completed\n");
+		return (1);
+	// }
 	cleanup(&data, philos);
 	return (0);
 }
