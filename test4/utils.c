@@ -12,10 +12,16 @@ long long	get_time(void)
 void	print_status(t_philosopher *philo, char *status)
 {
 	pthread_mutex_lock(&philo->data->print_lock);
+	//pthread_mutex_lock(&philo->data->dead_lock);
 	if (!philo->data->dead)
+	//{
 		printf("%lld Philosopher %d %s\n", get_time() - philo->data->start_time,
 			philo->id, status);
+			
 	pthread_mutex_unlock(&philo->data->print_lock);
+	//pthread_mutex_unlock(&philo->data->dead_lock);
+	//}
+	//pthread_mutex_unlock(&philo->data->print_lock);
 }
 
 void	take_forks(t_philosopher *philo)
@@ -129,8 +135,10 @@ void	init_data(t_data *data, t_philosopher *philos, int argc, char **argv)
 	else
 		data->must_eat_count = -1;
 	data->dead = 0;
+
 	pthread_mutex_init(&data->dead_lock, NULL);
 	pthread_mutex_init(&data->print_lock, NULL);
+	pthread_mutex_init(&data->num_philos_lock, NULL);
 	i = 0;
 	while (i < data->num_philos)
 	{
@@ -140,10 +148,10 @@ void	init_data(t_data *data, t_philosopher *philos, int argc, char **argv)
 	}
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->num_philos);
 	if (!data->forks)
-	{
-		free (data->forks);
+	//{
+		// free (data->forks);
 		return ;
-	}
+	//}
 }
 
 void	init_forks(t_data *data)
@@ -172,5 +180,6 @@ void	cleanup(t_data *data, t_philosopher *philos)
 	}
 	pthread_mutex_destroy(&data->dead_lock);
 	pthread_mutex_destroy(&data->print_lock);
+	pthread_mutex_destroy(&data->num_philos_lock);
 	free(data->forks);
 }
